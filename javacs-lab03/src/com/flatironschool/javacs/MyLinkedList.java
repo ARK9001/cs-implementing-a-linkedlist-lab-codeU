@@ -63,9 +63,11 @@ public class MyLinkedList<E> implements List<E> {
 		mll.add(1);
 		mll.add(2);
 		mll.add(3);
+		mll.add(3, 9);
 		System.out.println(Arrays.toString(mll.toArray()) + " size = " + mll.size());
+		//+ " Index of = " + mll.indexOf(3)
 		
-		mll.remove(new Integer(2));
+		mll.remove(new Integer(9));
 		System.out.println(Arrays.toString(mll.toArray()) + " size = " + mll.size());
 	}
 
@@ -86,6 +88,26 @@ public class MyLinkedList<E> implements List<E> {
 	@Override
 	public void add(int index, E element) {
 		// TODO: fill this in
+		if(index<0 || index > size){
+			throw new IndexOutOfBoundsException();
+		}
+		else{
+			add(element);
+			
+			if(index == 0){			
+				Node newNode = getNode(size-1);
+				newNode.next = head;
+				head = newNode;
+				getNode(size-1).next = null;
+			}
+			else if(index < size-1) {
+				Node newNode = getNode(size-1);
+				Node afterAdd = getNode(index);
+				getNode(size-2).next = null;
+				getNode(index-1).next = newNode;
+				newNode.next = afterAdd;
+			}
+		}
 	}
 
 	@Override
@@ -147,7 +169,22 @@ public class MyLinkedList<E> implements List<E> {
 	@Override
 	public int indexOf(Object target) {
 		// TODO: fill this in
-		return -1;
+		int tarIndex = 0;
+		if (head == null){
+			return -1;
+		}
+		else{
+			
+			for(Node node = head; node != null; node = node.next){
+				if(equals(target, node.cargo)){
+					return tarIndex;
+				}
+				tarIndex++;
+			}
+		}
+	
+	return -1;
+	
 	}
 
 	/** Checks whether an element of the array is the target.
@@ -202,7 +239,29 @@ public class MyLinkedList<E> implements List<E> {
 	@Override
 	public boolean remove(Object obj) {
 		// TODO: fill this in
+		int remIndex = 0;
+		for(Node node = head; node != null; node = node.next){
+			if(equals(obj, node.cargo)){
+				if(remIndex == 0){
+					head = head.next;
+					size--;
+					return true;
+				}
+				else if(remIndex == size-1){
+					getNode(size-2).next = null;
+					size--;
+					return true;
+				}
+				else{
+					getNode(remIndex-1).next = getNode(remIndex+1);
+					size--;
+					return true;
+				}
+			}
+			remIndex++;
+		}
 		return false;
+
 	}
 
 	@Override
@@ -267,7 +326,6 @@ public class MyLinkedList<E> implements List<E> {
 		Object[] array = new Object[size];
 		int i = 0;
 		for (Node node=head; node != null; node = node.next) {
-			// System.out.println(node);
 			array[i] = node.cargo;
 			i++;
 		}
